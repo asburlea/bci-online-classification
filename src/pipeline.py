@@ -1,24 +1,26 @@
 """
-Minimal real-time preprocessing pipeline
+Real-time classification pipeline
 """
 
+import time
 from pylsl import StreamInlet, resolve_stream
-from src.filters import OnlineBandpass
-from src.windowing import SlidingWindow
+from src.classifier import OnlineLDA
+from src.metrics import OnlineMetrics
 
-FS = 250
-N_CHANNELS = 8
-
-streams = resolve_stream("type", "EEG")
+streams = resolve_stream("type", "EEG_FEATURES")
 inlet = StreamInlet(streams[0])
 
-filt = OnlineBandpass(fs=FS, low=8, high=30, n_channels=N_CHANNELS)
-window = SlidingWindow(size=FS, step=FS // 4)
+clf = OnlineLDA()
+metrics = OnlineMetrics()
+
+# clf.train(X_train, y_train) must be called before running
 
 while True:
-    sample, _ = inlet.pull_sample()
-    sample = filt.process(sample)
-    win = window.update(sample)
+    t0 = time.time()
+    feature, _ = inlet.pull_sample()
 
-    if win is not None:
-        print("Window ready:", win.shape)
+    y = clf.predict(feature)
+    if y is not None:
+        metrics.log_latency(t0)
+        print("Prediction:", y,
+              "Mean latency:", metrics.mean_latency())
