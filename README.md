@@ -1,9 +1,12 @@
-# bci-online-preprocessing
-This repository focuses on preprocessing EEG signals in real time.
-All operations are causal and suitable for streaming applications.
+# bci-online-classification
 
-Topics covered in this repository:
-- Causal band-pass filtering
-- Stateful filter design
-- Sliding window segmentation
-- Offline vs online comparison
+This repository focuses on deploying machine learning models
+in real-time EEG pipelines.
+
+Key topics:
+- Train offline, infer online
+- Latency-aware prediction
+- Simple models > complex models in real time
+
+Models we will use:
+- Linear Discriminant Analysis (LDA)
